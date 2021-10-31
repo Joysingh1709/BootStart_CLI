@@ -1,6 +1,6 @@
 {
   "name": "@joysingh1730/bootstart",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI to bootstrap different new projects by just single line commands.",
   "main": "src/index.js",
   "bin": {
