@@ -12,7 +12,7 @@ Stay calm more frameworks comming soon...
 
 ## How to install
 
-Run `npm -g install bs` or `npm -g i bs` to install BootStart.
+Run `npm -g install @boot-start/cli` or `npm -g i @boot-start/cli` to install BootStart.
 
 Following commands are there to interact with BootStart CLI.
 
