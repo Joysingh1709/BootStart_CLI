@@ -32,16 +32,15 @@ export async function bootstart(options) {
         targetDirectory: options.targetDirectory || process.cwd(),
     };
 
-    const currentFileUrl = import.meta.url;
+    // const currentFileUrl = import.meta.url;
     // console.log("currentFileUrl : ",path.resolve(path.resolve(__dirname), '../templates', options.template.toLowerCase()));
-
     // const templateDir = path.resolve(new URL(currentFileUrl).pathname, '../../templates', options.template.toLowerCase());
+
     const templateDir = path.resolve(path.resolve(__dirname), '../templates', options.template.toLowerCase());
 
     options.templateDirectory = templateDir;
 
     try {
-        console.log("Template dir : ", templateDir);
         await access(templateDir.toString(), fs.constants.R_OK);
     } catch (err) {
         // console.log(err);
@@ -51,7 +50,7 @@ export async function bootstart(options) {
 
     const tasks = new Listr([
         {
-            title: 'Copy project files',
+            title: 'Setting up project files...',
             task: () => copyTemplateFiles(options),
         },
         {
@@ -60,7 +59,7 @@ export async function bootstart(options) {
             enabled: () => options.git,
         },
         {
-            title: 'Install dependencies',
+            title: 'Installing dependencies...',
             task: () =>
                 projectInstall({
                     cwd: options.targetDirectory,
@@ -74,6 +73,6 @@ export async function bootstart(options) {
 
     await tasks.run();
 
-    console.log('%s Project ready', chalk.green.bold('DONE'));
+    console.log('%s Project ready', chalk.green.bold('Project Created Successfully..!'));
     return true;
 }
