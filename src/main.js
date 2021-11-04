@@ -1,3 +1,4 @@
+"use-strict";
 import chalk from 'chalk';
 import fs from 'fs';
 import ncp from 'ncp';
@@ -7,16 +8,25 @@ import execa from 'execa';
 import Listr from 'listr';
 import { projectInstall } from 'pkg-install';
 
-const access = promisify(fs.access);
-const copy = promisify(ncp);
+/**
+ * access
+ * @internal
+ */
+export const access = promisify(fs.access);
 
-async function copyTemplateFiles(options) {
+/**
+ * copy
+ * @internal
+ */
+export const copy = promisify(ncp);
+
+export async function copyTemplateFiles(options) {
     return copy(options.templateDirectory, options.targetDirectory, {
         clobber: false,
     });
 }
 
-async function initGit(options) {
+export async function initGit(options) {
     const result = await execa('git', ['init'], {
         cwd: options.targetDirectory,
     });

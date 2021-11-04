@@ -1,9 +1,10 @@
+"use-strict";
 import arg from 'arg';
 import inquirer from 'inquirer';
 import { bootstart } from './main';
 import { drawBs } from './index';
 
-function parseArgumentsIntoOptions(rawArgs) {
+export function parseArgumentsIntoOptions(rawArgs) {
     const args = arg(
         {
             '--git': Boolean,
@@ -25,7 +26,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     };
 }
 
-async function promptForMissingOptions(options) {
+export async function promptForMissingOptions(options) {
     const defaultTemplate = 'javascript';
     if (options.skipPrompts) {
         return {
