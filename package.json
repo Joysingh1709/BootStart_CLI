@@ -2,7 +2,7 @@
   "name": "@boot-start/cli",
   "version": "1.1.2",
   "description": "A CLI to bootstrap different new projects by just single line commands.",
-  "main": "main/index.js",
+  "main": "dist/index.js",
   "bin": {
     "@bs-cli/bootstart": "bin/bootstart",
     "bootstart": "bin/bootstart",
@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "echo \"No test specified\"",
-    "minify": "jsmin -o main/cli.js src/cli.js && jsmin -o main/index.js src/index.js && jsmin -o main/main.js src/main.js",
+    "minify": "jsmin -o dist/cli.js src/cli.js && jsmin -o dist/index.js src/index.js && jsmin -o dist/main.js src/main.js",
     "build": "npx tsc && npm run minify",
     "publish": "np --no-2fa"
   },
