@@ -15,7 +15,7 @@
     "test": "echo \"No test specified\"",
     "minify": "jsmin -o lib/cli.js src/cli.js && jsmin -o lib/index.js src/index.js && jsmin -o lib/main.js src/main.js",
     "build": "npx tsc && npm run minify",
-    "publish": "np"
+    "publish": "np --no-2fa"
   },
   "files": [
     "bin/",
