@@ -1,4 +1,7 @@
 /node_modules
 /src
+/src/cli.js
+/src/index.js
+/src/main.js
 /test-dir
 .tsconfig.json
