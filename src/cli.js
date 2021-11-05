@@ -4,6 +4,12 @@ import inquirer from 'inquirer';
 import { bootstart } from './main';
 import { drawBs } from './index';
 
+/**
+ * frameworkChoices
+ * @internal
+ */
+export const frameworkChoices = ['Angular', 'React.Js', 'Vue.js', 'Next.js', 'Nest.js', 'Basic Node.js'];
+
 export function parseArgumentsIntoOptions(rawArgs) {
     const args = arg(
         {
@@ -21,23 +27,40 @@ export function parseArgumentsIntoOptions(rawArgs) {
     return {
         skipPrompts: args['--yes'] || false,
         git: args['--git'] || false,
-        template: args._[0],
+        framework: args._[0],
+        template: args._[1],
         runInstall: args['--install'] || false,
     };
 }
 
 export async function promptForMissingOptions(options) {
     const defaultTemplate = 'javascript';
+    const defaultFramework = 'Basic Node.js';
     if (options.skipPrompts) {
         return {
             ...options,
+            framework: options.framework || defaultFramework,
             template: options.template || defaultTemplate,
         };
     }
 
     const questions = [];
-    if (!options.template) {
-        questions.push({
+    const frameworkQuestions = [];
+
+    if (!options.framework) {
+        frameworkQuestions.push({
+            type: 'list',
+            name: 'framework',
+            message: 'Please choose which project framework to use',
+            choices: frameworkChoices,
+            default: defaultFramework,
+        });
+    }
+    const frameworkAnswers = await inquirer.prompt(frameworkQuestions);
+
+    const templatekQuestions = [];
+    if (!options.template && frameworkAnswers.framework !== frameworkChoices[0]) {
+        templatekQuestions.push({
             type: 'list',
             name: 'template',
             message: 'Please choose which project template to use',
@@ -45,6 +68,7 @@ export async function promptForMissingOptions(options) {
             default: defaultTemplate,
         });
     }
+    const templateAnswers = await inquirer.prompt(templatekQuestions);
 
     if (!options.git) {
         questions.push({
@@ -55,11 +79,22 @@ export async function promptForMissingOptions(options) {
         });
     }
 
+    if (!options.runInstall) {
+        questions.push({
+            type: 'confirm',
+            name: 'Install dependencies',
+            message: 'Install project dependencies?',
+            default: false,
+        });
+    }
+
     const answers = await inquirer.prompt(questions);
     return {
         ...options,
-        template: options.template || answers.template,
+        framework: options.framework || frameworkAnswers.framework,
+        template: options.template || templateAnswers.template,
         git: options.git || answers.git,
+        runInstall: options.runInstall || answers.runInstall
     };
 }
 
