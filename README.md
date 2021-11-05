@@ -3,7 +3,7 @@
     <img src="https://img.shields.io/npm/v/@boot-start/cli.svg?logo=npm&logoColor=fff&label=NPM+package&color=limegreen" alt="BootStart on npm" />
   </a>&nbsp;
 </p>
-# BootStart CLI
+# BootStart CLI v1.2.1
 
 Create different projects on any framework on just a single line command.
 Supporting frameworks :-
@@ -21,9 +21,8 @@ Run `npm -g install @boot-start/cli` or `npm -g i @boot-start/cli` to install Bo
 
 Following commands are there to interact with BootStart CLI.
 
-`#~ bs` or `#~ bootstart` -- 
-`#~ bs javascript --git --install` -- 
-`#~ bs javascript --yes` -- 
+`#~ bs` or `#~ bootstart` -- Entry command.
+`#~ bs [framework] [template]` or `#~ bootstart [framework] [template]` -- Entry command.
 `--yes` or `-y` -- Yes.
 `--git` or `-g` -- To initialize empty git Repository.
 `--install` or `-i` -- To install package dependencies.
