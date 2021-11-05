@@ -50,28 +50,7 @@ export async function bootstart(options) {
 
             options.templateDirectory = await resolveTargetPath(options, options.framework);
 
-            tasks = await createTask([
-                {
-                    title: 'Setting up project files...',
-                    task: () => copyTemplateFiles(options),
-                },
-                {
-                    title: 'Initialize git',
-                    task: () => initGit(options),
-                    enabled: () => options.git,
-                },
-                {
-                    title: 'Installing dependencies...',
-                    task: () =>
-                        projectInstall({
-                            cwd: options.targetDirectory,
-                        }),
-                    skip: () =>
-                        !options.runInstall
-                            ? 'Pass --install to automatically install dependencies'
-                            : undefined,
-                },
-            ]);
+            tasks = await createTask(options);
 
             await tasks.run();
 
@@ -80,24 +59,68 @@ export async function bootstart(options) {
 
             break;
 
-        case options.framework === frameworkChoices[1]:
+        case frameworkChoices[1]:
+
+            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
+
+            tasks = await createTask(options);
+
+            await tasks.run();
+
+            await projectCreated();
+            return true;
 
             break;
 
-        case options.framework === frameworkChoices[2]:
+        case frameworkChoices[2]:
+
+            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
+
+            tasks = await createTask(options);
+
+            await tasks.run();
+
+            await projectCreated();
+            return true;
 
             break;
 
-        case options.framework === frameworkChoices[3]:
+        case frameworkChoices[3]:
+
+            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
+
+            tasks = await createTask(options);
+
+            await tasks.run();
+
+            await projectCreated();
+            return true;
 
             break;
 
-        case options.framework === frameworkChoices[4]:
+        case frameworkChoices[4]:
+
+            options.templateDirectory = await resolveTargetPath(options, options.framework);
+
+            tasks = await createTask(options);
+
+            await tasks.run();
+
+            await projectCreated();
+            return true;
 
             break;
 
         default:
 
+            options.templateDirectory = await resolveTargetPath(options, options.framework);
+
+            tasks = await createTask(options);
+
+            await tasks.run();
+
+            await projectCreated();
+            return true;
             break;
     }
 
@@ -107,8 +130,29 @@ export async function bootstart(options) {
     //     return true;
 }
 
-export async function createTask(task) {
-    const tasks = await new Listr(task);
+export async function createTask(options) {
+    const tasks = await new Listr([
+        {
+            title: 'Setting up project files...',
+            task: () => copyTemplateFiles(options),
+        },
+        {
+            title: 'Initialize git',
+            task: () => initGit(options),
+            enabled: () => options.git,
+        },
+        {
+            title: 'Installing dependencies...',
+            task: () =>
+                projectInstall({
+                    cwd: options.targetDirectory,
+                }),
+            skip: () =>
+                !options.runInstall
+                    ? 'Pass --install to automatically install dependencies'
+                    : undefined,
+        },
+    ]);
     return tasks;
 }
 

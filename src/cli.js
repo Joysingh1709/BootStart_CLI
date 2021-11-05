@@ -45,8 +45,8 @@ export async function promptForMissingOptions(options) {
     }
 
     const questions = [];
-    const frameworkQuestions = [];
 
+    const frameworkQuestions = [];
     if (!options.framework) {
         frameworkQuestions.push({
             type: 'list',
@@ -59,14 +59,16 @@ export async function promptForMissingOptions(options) {
     const frameworkAnswers = await inquirer.prompt(frameworkQuestions);
 
     const templatekQuestions = [];
-    if (!options.template && frameworkAnswers.framework !== frameworkChoices[0]) {
-        templatekQuestions.push({
-            type: 'list',
-            name: 'template',
-            message: 'Please choose which project template to use',
-            choices: ['JavaScript', 'TypeScript'],
-            default: defaultTemplate,
-        });
+    if (!options.template) {
+        if (frameworkAnswers.framework !== frameworkChoices[0] && frameworkAnswers.framework !== frameworkChoices[4] && frameworkAnswers.framework !== frameworkChoices[5]) {
+            templatekQuestions.push({
+                type: 'list',
+                name: 'template',
+                message: 'Please choose which project template to use',
+                choices: ['JavaScript', 'TypeScript'],
+                default: defaultTemplate,
+            });
+        }
     }
     const templateAnswers = await inquirer.prompt(templatekQuestions);
 
