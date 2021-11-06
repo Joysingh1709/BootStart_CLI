@@ -60,7 +60,7 @@ export async function promptForMissingOptions(options) {
 
     const templatekQuestions = [];
     if (!options.template) {
-        if (frameworkAnswers.framework !== frameworkChoices[0] && frameworkAnswers.framework !== frameworkChoices[4] && frameworkAnswers.framework !== frameworkChoices[5]) {
+        if (frameworkAnswers.framework !== frameworkChoices[0] && frameworkAnswers.framework !== frameworkChoices[4]) {
             templatekQuestions.push({
                 type: 'list',
                 name: 'template',
@@ -84,19 +84,20 @@ export async function promptForMissingOptions(options) {
     if (!options.runInstall) {
         questions.push({
             type: 'confirm',
-            name: 'Install dependencies',
+            name: 'Install',
             message: 'Install project dependencies?',
             default: false,
         });
     }
 
     const answers = await inquirer.prompt(questions);
+
     return {
         ...options,
         framework: options.framework || frameworkAnswers.framework,
         template: options.template || templateAnswers.template,
         git: options.git || answers.git,
-        runInstall: options.runInstall || answers.runInstall
+        runInstall: options.runInstall || answers.Install
     };
 }
 

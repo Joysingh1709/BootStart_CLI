@@ -16,6 +16,18 @@ import { frameworkChoices } from './cli';
 export const access = promisify(fs.access);
 
 /**
+ * rmdirSync
+ * @internal
+ */
+export const rmdirSync = promisify(fs.rmdirSync);
+
+/**
+ * readDir
+ * @internal
+ */
+export const readDir = promisify(fs.readdir);
+
+/**
  * copy
  * @internal
  */
@@ -27,9 +39,47 @@ export async function copyTemplateFiles(options) {
     });
 }
 
-export async function initGit(options) {
-    const result = await execa('git', ['init'], {
+export async function getFirstDirName(path) {
+    const directories = readDir(path);
+    return directories;
+}
+
+export async function getNewTargetDir(options) {
+    const directories = await readDir(options.targetDirectory);
+    return options.targetDirectory + '/' + directories[0];
+}
+
+export async function finishingTouches(options) {
+    const projName = await getFirstDirName(options.targetDirectory);
+
+    const dir = options.targetDirectory + '/' + projName + '/.git';
+
+    const result = rmdirSync(dir, { recursive: true, force: true });
+
+    if (result.failed) {
+        return Promise.reject(new Error('Failed to do finishing touches...'));
+    }
+
+    return;
+}
+
+export async function createTemplateFiles(options, templateUrl) {
+    const result = await execa('git', ['clone', templateUrl], {
         cwd: options.targetDirectory,
+    });
+    if (result.failed) {
+        return Promise.reject(new Error('Failed to initialize git'));
+    }
+
+    return;
+}
+
+export async function initGit(options) {
+    const projName = await getFirstDirName(options.targetDirectory);
+    const dir = options.targetDirectory + '/' + projName;
+
+    const result = await execa('git', ['init'], {
+        cwd: dir,
     });
     if (result.failed) {
         return Promise.reject(new Error('Failed to initialize git'));
@@ -48,9 +98,9 @@ export async function bootstart(options) {
     switch (options.framework) {
         case frameworkChoices[0]:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework);
+            // options.templateDirectory = await resolveTargetPath(options, options.framework);
 
-            tasks = await createTask(options);
+            tasks = await createTask(options, "https://github.com/juanmesa2097/angular-boilerplate.git");
 
             await tasks.run();
 
@@ -61,9 +111,11 @@ export async function bootstart(options) {
 
         case frameworkChoices[1]:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
+            // options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
 
-            tasks = await createTask(options);
+            tasks = options.template.toLowerCase().replace(/ /g, "") === 'javascript' ?
+                await createTask(options, "https://github.com/react-boilerplate/react-boilerplate.git")
+                : await createTask(options, "https://github.com/react-boilerplate/react-boilerplate-cra-template.git");
 
             await tasks.run();
 
@@ -74,7 +126,9 @@ export async function bootstart(options) {
 
         case frameworkChoices[2]:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
+            tasks = options.template.toLowerCase().replace(/ /g, "") === 'javascript' ?
+                await createTask(options, "https://github.com/davellanedam/vue-skeleton-mvp.git")
+                : await createTask(options, "https://github.com/CKGrafico/Frontend-Boilerplates.git");
 
             tasks = await createTask(options);
 
@@ -87,9 +141,9 @@ export async function bootstart(options) {
 
         case frameworkChoices[3]:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework, options.template);
-
-            tasks = await createTask(options);
+            tasks = options.template.toLowerCase().replace(/ /g, "") === 'javascript' ?
+                await createTask(options, "https://github.com/iaincollins/nextjs-starter.git")
+                : await createTask(options, "https://github.com/alepacheco/landing-template.git");
 
             await tasks.run();
 
@@ -100,9 +154,7 @@ export async function bootstart(options) {
 
         case frameworkChoices[4]:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework);
-
-            tasks = await createTask(options);
+            tasks = await createTask(options, "https://github.com/squareboat/nestjs-boilerplate.git");
 
             await tasks.run();
 
@@ -113,9 +165,9 @@ export async function bootstart(options) {
 
         default:
 
-            options.templateDirectory = await resolveTargetPath(options, options.framework);
-
-            tasks = await createTask(options);
+            tasks = options.template.toLowerCase().replace(/ /g, "") === 'javascript' ?
+                await createTask(options, "https://github.com/sahat/hackathon-starter.git")
+                : await createTask(options, "https://github.com/santoshshinde2012/node-boilerplate.git");
 
             await tasks.run();
 
@@ -123,18 +175,17 @@ export async function bootstart(options) {
             return true;
             break;
     }
-
-    //     await tasks.run();
-    // 
-    //     console.log('%s Project ready', chalk.green.bold('Project Created Successfully..!'));
-    //     return true;
 }
 
-export async function createTask(options) {
+export async function createTask(options, templateUrl) {
     const tasks = await new Listr([
         {
             title: 'Setting up project files...',
-            task: () => copyTemplateFiles(options),
+            task: () => createTemplateFiles(options, templateUrl),
+        },
+        {
+            title: 'Setting up important files...',
+            task: () => finishingTouches(options),
         },
         {
             title: 'Initialize git',
@@ -143,9 +194,9 @@ export async function createTask(options) {
         },
         {
             title: 'Installing dependencies...',
-            task: () =>
+            task: async () =>
                 projectInstall({
-                    cwd: options.targetDirectory,
+                    cwd: await getNewTargetDir(options),
                 }),
             skip: () =>
                 !options.runInstall
